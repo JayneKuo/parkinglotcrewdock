@@ -1,0 +1,35 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .primary { fill: #5E3BEE; }
+    .secondary { fill: rgba(94, 59, 238, 0.1); }
+    .lines { 
+      stroke: #5E3BEE;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
+  
+  <!-- Warehouse Building -->
+  <rect x="100" y="100" width="600" height="400" class="secondary" />
+  <path d="M100 100 L400 50 L700 100" class="lines" />
+  <rect x="100" y="100" width="600" height="400" class="lines" />
+  
+  <!-- Dock Doors -->
+  <rect x="150" y="250" width="100" height="120" class="lines" />
+  <rect x="350" y="250" width="100" height="120" class="lines" />
+  <rect x="550" y="250" width="100" height="120" class="lines" />
+  
+  <!-- Truck (simplified) -->
+  <rect x="300" y="400" width="200" height="100" class="lines" />
+  <rect x="200" y="450" width="100" height="50" class="lines" />
+  <circle cx="250" cy="500" r="20" class="lines" />
+  <circle cx="450" cy="500" r="20" class="lines" />
+  
+  <!-- Mobile Device -->
+  <rect x="650" y="200" width="60" height="100" rx="10" class="lines" />
+  <line x1="670" y1="280" x2="690" y2="280" class="lines" />
+  
+  <!-- Connection Lines -->
+  <path d="M710 250 C730 250, 730 400, 500 400" class="lines" stroke-dasharray="5,5" />
+</svg> 
