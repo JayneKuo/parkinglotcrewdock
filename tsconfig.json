@@ -12,15 +12,7 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "types": [
-      "node",
-      "vue-router",
-      "element-plus/global"
-    ]
+    "noEmit": true
   },
   "include": [
     "src/**/*.ts",
