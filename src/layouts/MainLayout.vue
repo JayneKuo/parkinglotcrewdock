@@ -46,7 +46,38 @@
         </div>
       </el-col>
       <el-col :span="4" class="nav-actions">
-        <router-link to="/auth/login">
+        <template v-if="isLoggedIn">
+          <el-dropdown trigger="click">
+            <div class="user-menu">
+              <el-avatar 
+                :size="32" 
+                :src="userAvatar" 
+                class="user-avatar"
+              >
+                {{ userInitials }}
+              </el-avatar>
+              <span class="user-name">{{ userName }}</span>
+              <el-icon><ArrowDown /></el-icon>
+            </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="handleProfile">
+                  <el-icon><User /></el-icon>
+                  Profile
+                </el-dropdown-item>
+                <el-dropdown-item @click="handleChangePassword">
+                  <el-icon><Lock /></el-icon>
+                  Change Password
+                </el-dropdown-item>
+                <el-dropdown-item divided @click="handleLogout">
+                  <el-icon><SwitchButton /></el-icon>
+                  Sign Out
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </template>
+        <router-link v-else to="/auth/login">
           <el-button class="sign-in">Sign In</el-button>
         </router-link>
       </el-col>
@@ -54,15 +85,187 @@
 
     <!-- 路由视图 -->
     <router-view></router-view>
+
+    <!-- 添加修改密码对话框 -->
+    <el-dialog
+      v-model="changePasswordVisible"
+      title="Change Password"
+      width="480px"
+      class="change-password-dialog"
+      :show-close="false"
+    >
+      <el-form
+        ref="passwordFormRef"
+        :model="passwordForm"
+        :rules="passwordRules"
+        label-position="top"
+      >
+        <el-form-item label="Current Password" prop="currentPassword">
+          <el-input
+            v-model="passwordForm.currentPassword"
+            type="password"
+            placeholder="Enter your current password"
+            prefix-icon="Lock"
+            show-password
+          />
+        </el-form-item>
+        
+        <el-form-item label="New Password" prop="password">
+          <el-input
+            v-model="passwordForm.password"
+            type="password"
+            placeholder="Enter new password"
+            prefix-icon="Lock"
+            show-password
+          />
+          <div class="password-hint">
+            <el-icon><InfoFilled /></el-icon>
+            <span>Password must be at least 8 characters with uppercase, lowercase, number and special character</span>
+          </div>
+        </el-form-item>
+        
+        <el-form-item label="Confirm Password" prop="confirmPassword">
+          <el-input
+            v-model="passwordForm.confirmPassword"
+            type="password"
+            placeholder="Confirm your new password"
+            prefix-icon="Lock"
+            show-password
+          />
+        </el-form-item>
+      </el-form>
+      
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="changePasswordVisible = false">Cancel</el-button>
+          <el-button 
+            type="primary" 
+            @click="submitChangePassword"
+            :loading="changingPassword"
+          >
+            Confirm
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, ref, reactive } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { ArrowDown, SwitchButton, User, Lock, InfoFilled } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 
 const route = useRoute()
+const router = useRouter()
 const currentRoute = computed(() => route.path)
+
+// 用户登录状态
+const isLoggedIn = computed(() => {
+  return localStorage.getItem('token') !== null
+})
+
+// 获取用户信息
+const userInfo = computed(() => {
+  const userStr = localStorage.getItem('user')
+  return userStr ? JSON.parse(userStr) : null
+})
+
+// 用户名
+const userName = computed(() => {
+  return userInfo.value?.name || '用户'
+})
+
+// 用户头像显示的首字母
+const userInitials = computed(() => {
+  return userName.value.charAt(0).toUpperCase()
+})
+
+// 用户头像
+const userAvatar = computed(() => {
+  return userInfo.value?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + userInfo.value?.email
+})
+
+// 修改密码相关
+const changePasswordVisible = ref(false)
+const changingPassword = ref(false)
+const passwordFormRef = ref<FormInstance>()
+
+const passwordForm = reactive({
+  currentPassword: '',
+  password: '',
+  confirmPassword: ''
+})
+
+const passwordRules = {
+  currentPassword: [
+    { required: true, message: 'Please enter current password', trigger: 'blur' },
+    { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: 'Please enter new password', trigger: 'blur' },
+    { min: 8, message: 'Password must be at least 8 characters', trigger: 'blur' }
+  ],
+  confirmPassword: [
+    { required: true, message: 'Please confirm new password', trigger: 'blur' },
+    {
+      validator: (rule: any, value: string, callback: Function) => {
+        if (value !== passwordForm.password) {
+          callback(new Error('Passwords do not match'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
+  ]
+}
+
+// 处理查看个人资料
+const handleProfile = () => {
+  router.push('/profile')
+}
+
+// 处理修改密码
+const handleChangePassword = () => {
+  changePasswordVisible.value = true
+  passwordForm.currentPassword = ''
+  passwordForm.password = ''
+  passwordForm.confirmPassword = ''
+}
+
+// 提交修改密码
+const submitChangePassword = async () => {
+  if (!passwordFormRef.value) return
+  
+  try {
+    await passwordFormRef.value.validate()
+    changingPassword.value = true
+    
+    // 模拟API调用
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    ElMessage.success('Password changed successfully')
+    changePasswordVisible.value = false
+  } catch (error) {
+    ElMessage.error('Please check your input')
+  } finally {
+    changingPassword.value = false
+  }
+}
+
+// 修改退出登录提示为英文
+const handleLogout = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  ElMessage.success('Signed out successfully')
+  // 先跳转到首页,再清除路由历史
+  router.push('/').then(() => {
+    window.location.reload() // 刷新页面以清除所有状态
+  })
+}
 </script>
 
 <style scoped lang="scss">
@@ -302,6 +505,128 @@ const currentRoute = computed(() => route.path)
       }
       .truck-cabin {
         filter: brightness(1.1);
+      }
+    }
+  }
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.user-avatar {
+  background: #5E3BEE;
+  color: white;
+  font-weight: 600;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1A1A1A;
+}
+
+:deep(.el-dropdown-menu__item) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  
+  .el-icon {
+    margin: 0;
+  }
+
+  &.el-dropdown-menu__item--divided {
+    border-top: 1px solid #EBEEF5;
+    margin-top: 4px;
+    padding-top: 12px;
+  }
+}
+
+.change-password-dialog {
+  :deep(.el-dialog__header) {
+    margin: 0;
+    padding: 20px 24px;
+    border-bottom: 1px solid #EBEEF5;
+    
+    .el-dialog__title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1A1A1A;
+    }
+  }
+  
+  :deep(.el-dialog__body) {
+    padding: 24px;
+  }
+  
+  :deep(.el-form-item__label) {
+    font-weight: 500;
+    color: #1A1A1A;
+    padding-bottom: 8px;
+  }
+  
+  :deep(.el-input__wrapper) {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      box-shadow: 0 0 0 1px rgba(94, 59, 238, 0.3);
+    }
+    
+    &.is-focus {
+      box-shadow: 0 0 0 2px rgba(94, 59, 238, 0.2);
+    }
+  }
+  
+  .password-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(94, 59, 238, 0.05);
+    border-radius: 6px;
+    
+    .el-icon {
+      color: var(--el-color-primary);
+      font-size: 14px;
+    }
+    
+    span {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.4;
+    }
+  }
+  
+  .dialog-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #EBEEF5;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    
+    .el-button--primary {
+      background: linear-gradient(135deg, #5E3BEE, #7B5AFF);
+      border: none;
+      padding: 10px 24px;
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(94, 59, 238, 0.2);
       }
     }
   }

@@ -107,7 +107,14 @@
                   <h3>{{ feature.title }}</h3>
                   <p>{{ feature.description }}</p>
                 </div>
-                <div class="hover-indicator"></div>
+                <div class="flow-indicator">
+                  <div class="flow-dots">
+                    <div class="flow-dot"></div>
+                    <div class="flow-dot"></div>
+                    <div class="flow-dot"></div>
+                  </div>
+                  <div class="flow-text">{{ feature.flowText }}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -131,6 +138,7 @@ import {
   DataAnalysis,
   Bell,
   Star,
+  Connection,
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
@@ -181,19 +189,22 @@ const warehouseImage = {
 
 const features = [
   {
-    icon: Timer,
+    icon: Calendar,
     title: 'Quick Booking',
-    description: 'Book your preferred dock time slot in less than 2 minutes. No phone calls needed.'
+    description: 'Book your preferred dock time slot in less than 2 minutes. No phone calls needed.',
+    flowText: 'Select → Book → Confirm'
   },
   {
-    icon: DataAnalysis,
-    title: 'Real-time Availability',
-    description: 'See live dock availability and get instant confirmation for your bookings.'
+    icon: Connection,
+    title: 'Smart Matching',
+    description: 'AI-powered system matches your needs with the best available docks based on location, timing, and equipment.',
+    flowText: 'Match → Optimize → Assign'
   },
   {
     icon: Bell,
     title: 'SMS Updates',
-    description: 'Get automatic notifications about your booking status and wait times.'
+    description: 'Get automatic notifications about your booking status and wait times.',
+    flowText: 'Monitor → Update → Notify'
   }
 ]
 
@@ -849,66 +860,77 @@ const handleFindDocks = () => {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
+  perspective: 1000px;
 }
 
 .feature-card {
   position: relative;
-  height: 320px;
-  perspective: 1000px;
+  height: 340px;
+  transform-style: preserve-3d;
+  cursor: pointer;
 }
 
 .feature-inner {
   position: relative;
   height: 100%;
-  padding: 2.5rem;
-  background: rgba(255, 255, 255, 0.7);
+  padding: 2.5rem 2rem;
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 24px;
   border: 1px solid rgba(94, 59, 238, 0.1);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
+  display: flex;
+  flex-direction: column;
   
   &:hover {
-    transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+    transform: translateY(-8px);
     box-shadow: 
-      0 20px 40px rgba(94, 59, 238, 0.1),
-      0 0 0 1px rgba(94, 59, 238, 0.05);
+      0 24px 48px rgba(94, 59, 238, 0.15),
+      0 0 0 1px rgba(94, 59, 238, 0.1);
       
-    .icon-background {
-      transform: scale(1.2);
-      opacity: 0.2;
-    }
-    
-    .icon-container {
-      transform: translateY(-4px);
-      background: linear-gradient(135deg, #5E3BEE, #7B5AFF);
+      .icon-background {
+        transform: scale(1.2);
+        opacity: 0.15;
+        filter: blur(16px);
+      }
       
-      .el-icon {
-        color: white;
+      .icon-container {
+        transform: translateY(-4px);
+        background: rgba(94, 59, 238, 0.1);
+        
+        .el-icon {
+          color: #5E3BEE;
+          transform: scale(1.1);
+          filter: drop-shadow(0 4px 12px rgba(94, 59, 238, 0.3));
+        }
       }
     }
-    
-    .hover-indicator {
-      opacity: 1;
-      transform: scaleX(1);
-    }
-  }
 }
 
 .feature-icon-wrapper {
   position: relative;
   margin-bottom: 2rem;
+  transform-style: preserve-3d;
+  width: 64px;
+  height: 64px;
 }
 
 .icon-background {
   position: absolute;
-  width: 80px;
-  height: 80px;
+  inset: -8px;
   background: #5E3BEE;
   filter: blur(24px);
   opacity: 0.1;
   border-radius: 20px;
-  transition: all 0.5s ease;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  background: radial-gradient(
+    circle at center,
+    #5E3BEE 0%,
+    rgba(94, 59, 238, 0.8) 50%,
+    rgba(94, 59, 238, 0) 100%
+  );
 }
 
 .icon-container {
@@ -918,29 +940,36 @@ const handleFindDocks = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.4s ease;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  border-radius: 16px;
+  background: rgba(94, 59, 238, 0.08);
   
   .el-icon {
     font-size: 2rem;
-    color: #5E3BEE;
-    transition: all 0.4s ease;
-    filter: drop-shadow(0 2px 4px rgba(94, 59, 238, 0.2));
+    color: #7B5AFF;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 2px 8px rgba(94, 59, 238, 0.2));
   }
 }
 
 .feature-content {
-  h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1A1A1A;
-    margin-bottom: 1rem;
-    letter-spacing: -0.02em;
-  }
+  flex: 1;
+  margin-bottom: 1.5rem;
+  position: relative;
   
-  p {
-    color: #666666;
-    line-height: 1.7;
-    font-size: 1rem;
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1rem;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      rgba(94, 59, 238, 0.1),
+      rgba(94, 59, 238, 0.2) 50%,
+      rgba(94, 59, 238, 0.1)
+    );
   }
 }
 
@@ -1074,12 +1103,10 @@ const handleFindDocks = () => {
 
 .feature-inner:hover {
   .icon-container {
-    transform: translateY(-4px);
-    
     .el-icon {
       color: #5E3BEE;
       transform: scale(1.1);
-      filter: drop-shadow(0 4px 8px rgba(94, 59, 238, 0.3));
+      filter: drop-shadow(0 4px 12px rgba(94, 59, 238, 0.3));
     }
   }
 }
@@ -1116,5 +1143,114 @@ const handleFindDocks = () => {
 .create-account-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(94, 59, 238, 0.2);
+}
+
+/* 添加鼠标移动视差效果 */
+@media (hover: hover) {
+  .feature-card {
+    &:hover {
+      .feature-inner {
+        transition: none;
+      }
+    }
+  }
+}
+
+/* 添加卡片点击效果 */
+.feature-card:active .feature-inner {
+  transform: translateY(-6px) rotateX(2deg) rotateY(-2deg);
+  transition: all 0.1s ease;
+}
+
+/* 添加流程指示器 */
+.flow-indicator {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  opacity: 1;
+  transform: translateY(0);
+  padding-top: 1rem;
+  
+  .flow-dots {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      top: 50%;
+      height: 2px;
+      background: linear-gradient(90deg,
+        rgba(94, 59, 238, 0.1),
+        rgba(94, 59, 238, 0.2) 50%,
+        rgba(94, 59, 238, 0.1)
+      );
+      transform: translateY(-50%);
+    }
+  }
+  
+  .flow-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #5E3BEE;
+    opacity: 0.2;
+    transform-origin: center;
+    position: relative;
+    z-index: 1;
+    animation: flowDots 2s infinite;
+    
+    &:nth-child(2) {
+      animation-delay: 0.66s;
+    }
+    &:nth-child(3) {
+      animation-delay: 1.33s;
+    }
+  }
+  
+  .flow-text {
+    font-size: 0.875rem;
+    color: #666;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    &::before {
+      content: '';
+      width: 16px;
+      height: 2px;
+      background: linear-gradient(90deg, #5E3BEE, #7B5AFF);
+      border-radius: 1px;
+    }
+  }
+}
+
+/* 添加流程动画 */
+@keyframes flowDots {
+  0% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+  33% {
+    transform: scale(1.5);
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(94, 59, 238, 0.3);
+  }
+  66% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
 }
 </style> 

@@ -43,6 +43,11 @@ const routes = [
         path: 'register',
         name: 'Register',
         component: () => import('@/views/auth/Register.vue')
+      },
+      {
+        path: 'reset-password',
+        name: 'ResetPassword',
+        component: () => import('@/views/auth/ResetPassword.vue')
       }
     ]
   }
@@ -51,6 +56,15 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+// 添加全局导航守卫
+router.beforeEach((to, from, next) => {
+  // 存储尝试访问的页面路径
+  if (to.path !== '/auth/login' && to.path !== '/auth/register') {
+    localStorage.setItem('redirectPath', to.fullPath)
+  }
+  next()
 })
 
 export default router 

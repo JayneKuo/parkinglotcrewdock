@@ -46,7 +46,7 @@
               <el-checkbox v-model="form.remember">Remember me</el-checkbox>
               <el-button 
                 type="text" 
-                @click="handleForgotPassword"
+                @click="$router.push('/auth/reset-password')"
                 class="forgot-link"
               >
                 Forgot password?
@@ -168,10 +168,26 @@ const handleLogin = async () => {
     if (form.email === TEST_ACCOUNT.email && form.password === TEST_ACCOUNT.password) {
       // 存储登录状态
       localStorage.setItem('token', 'test-token')
-      localStorage.setItem('user', JSON.stringify({ email: form.email }))
+      localStorage.setItem('user', JSON.stringify({ 
+        email: form.email,
+        name: 'Test User'
+      }))
       
       ElMessage.success('Login successful!')
-      router.push('/')
+      
+      // 获取重定向路径，如果是登录相关页面则重定向到首页
+      const redirectPath = localStorage.getItem('redirectPath') || '/'
+      const authPaths = ['/auth/login', '/auth/register', '/auth/reset-password']
+      
+      // 如果重定向路径是认证相关页面，则重定向到首页
+      if (authPaths.some(path => redirectPath.includes(path))) {
+        router.push('/')
+      } else {
+        router.push(redirectPath)
+      }
+      
+      // 清除重定向路径
+      localStorage.removeItem('redirectPath')
     } else {
       ElMessage.error('Invalid email or password')
     }
