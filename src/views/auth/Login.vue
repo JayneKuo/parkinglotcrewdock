@@ -11,63 +11,59 @@
       <!-- 左侧品牌区域 -->
       <div class="brand-section">
         <div class="brand-content">
-          <router-link to="/" class="logo-link">
-            <div class="logo-container">
-              <div class="logo-icon">
-                <div class="dock-door"></div>
-                <div class="truck">
-                  <div class="truck-body"></div>
-                  <div class="truck-cabin"></div>
-                </div>
-                <div class="flow-line"></div>
-              </div>
-              <span class="logo-text">DockFlow</span>
-            </div>
-          </router-link>
-          <h2>The industry's leading dock management and scheduling tool</h2>
-          <p>Streamline your dock operations with our intuitive platform</p>
+          <BrandLogo />
+          <h2>Dock Appointment Management</h2>
+          <p>Schedule your dock appointments efficiently</p>
         </div>
       </div>
 
       <!-- 右侧登录表单 -->
       <div class="form-section">
         <div class="form-container">
-          <h1>Welcome to OpenDock</h1>
-          <p class="subtitle">Sign in here to use our Warehouse portal or Scheduling Portal</p>
+          <h1>Welcome Back</h1>
+          <p class="subtitle">Sign in to continue booking</p>
 
           <el-form ref="formRef" :model="form" :rules="rules" class="login-form">
             <el-form-item prop="email">
-              <el-input 
-                v-model="form.email" 
+              <el-input
+                v-model="form.email"
                 placeholder="Email"
-                :prefix-icon="Message"
+                prefix-icon="Message"
               />
             </el-form-item>
 
             <el-form-item prop="password">
-              <el-input 
-                v-model="form.password" 
-                type="password" 
+              <el-input
+                v-model="form.password"
+                type="password"
                 placeholder="Password"
-                :prefix-icon="Lock"
-                :suffix-icon="View"
-                @click:suffix="togglePasswordVisibility"
+                prefix-icon="Lock"
+                show-password
               />
             </el-form-item>
 
             <div class="form-actions">
               <el-checkbox v-model="form.remember">Remember me</el-checkbox>
-              <router-link to="/auth/forgot-password" class="forgot-link">
-                Forgot your password?
-              </router-link>
+              <el-button 
+                type="text" 
+                @click="handleForgotPassword"
+                class="forgot-link"
+              >
+                Forgot password?
+              </el-button>
             </div>
 
-            <el-button type="primary" class="submit-btn" @click="handleSubmit">
+            <el-button 
+              type="primary" 
+              class="submit-btn" 
+              :loading="loading"
+              @click="handleLogin"
+            >
               Sign in
             </el-button>
 
             <div class="register-hint">
-              Looking to sign up for our Scheduling Portal?
+              Don't have an account?
               <router-link to="/auth/register" class="register-link">
                 Register here
               </router-link>
@@ -76,21 +72,65 @@
         </div>
       </div>
     </div>
+
+    <!-- 忘记密码对话框 -->
+    <el-dialog
+      v-model="forgotPasswordDialog"
+      title="Reset Password"
+      width="400px"
+      center
+    >
+      <el-form :model="resetForm" :rules="resetRules" ref="resetFormRef">
+        <el-form-item prop="email">
+          <el-input
+            v-model="resetForm.email"
+            placeholder="Enter your email"
+            prefix-icon="Message"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span>
+          <el-button @click="forgotPasswordDialog = false">Cancel</el-button>
+          <el-button 
+            type="primary" 
+            @click="handleResetPassword"
+            :loading="resetLoading"
+          >
+            Send Reset Link
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { Message, Lock, View } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage } from 'element-plus'
 
+const router = useRouter()
 const formRef = ref<FormInstance>()
+const resetFormRef = ref<FormInstance>()
+const loading = ref(false)
+const resetLoading = ref(false)
+const forgotPasswordDialog = ref(false)
+
+// 登录表单数据
 const form = reactive({
-  email: '',
-  password: '',
-  remember: false
+  email: 'test@example.com',
+  password: '123456',
+  remember: true
 })
 
+// 重置密码表单数据
+const resetForm = reactive({
+  email: ''
+})
+
+// 登录表单验证规则
 const rules: FormRules = {
   email: [
     { required: true, message: 'Email is required', trigger: 'blur' },
@@ -102,18 +142,70 @@ const rules: FormRules = {
   ]
 }
 
-const handleSubmit = async () => {
-  if (!formRef.value) return
-  await formRef.value.validate((valid) => {
-    if (valid) {
-      // 处理登录逻辑
-    }
-  })
+// 重置密码表单验证规则
+const resetRules: FormRules = {
+  email: [
+    { required: true, message: 'Email is required', trigger: 'blur' },
+    { type: 'email', message: 'Please enter a valid email', trigger: 'blur' }
+  ]
 }
 
-const togglePasswordVisibility = () => {
-  const input = document.querySelector('input[type="password"]') as HTMLInputElement
-  input.type = input.type === 'password' ? 'text' : 'password'
+// 内置测试账号
+const TEST_ACCOUNT = {
+  email: 'test@example.com',
+  password: '123456'
+}
+
+// 处理登录
+const handleLogin = async () => {
+  if (!formRef.value) return
+  
+  try {
+    await formRef.value.validate()
+    loading.value = true
+    
+    // 模拟API调用，验证测试账号
+    if (form.email === TEST_ACCOUNT.email && form.password === TEST_ACCOUNT.password) {
+      // 存储登录状态
+      localStorage.setItem('token', 'test-token')
+      localStorage.setItem('user', JSON.stringify({ email: form.email }))
+      
+      ElMessage.success('Login successful!')
+      router.push('/')
+    } else {
+      ElMessage.error('Invalid email or password')
+    }
+  } catch (error) {
+    ElMessage.error('Please check your input')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 处理忘记密码
+const handleForgotPassword = () => {
+  forgotPasswordDialog.value = true
+  resetForm.email = form.email // 预填充邮箱
+}
+
+// 处理重置密码
+const handleResetPassword = async () => {
+  if (!resetFormRef.value) return
+  
+  try {
+    await resetFormRef.value.validate()
+    resetLoading.value = true
+    
+    // 模拟API调用
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    ElMessage.success('Password reset link has been sent to your email')
+    forgotPasswordDialog.value = false
+  } catch (error) {
+    ElMessage.error('Please check your input')
+  } finally {
+    resetLoading.value = false
+  }
 }
 </script>
 
@@ -191,19 +283,28 @@ const togglePasswordVisibility = () => {
 
 .brand-content {
   max-width: 480px;
+}
 
-  h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin: 2rem 0 1rem;
-    line-height: 1.2;
-  }
+.brand-title {
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(45deg, #fff, #e0e7ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
 
-  p {
-    font-size: 1.125rem;
-    opacity: 0.9;
-    line-height: 1.6;
-  }
+.brand-content h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 2rem 0 1rem;
+  line-height: 1.2;
+}
+
+.brand-content p {
+  font-size: 1.125rem;
+  opacity: 0.9;
+  line-height: 1.6;
 }
 
 .form-section {
@@ -216,38 +317,36 @@ const togglePasswordVisibility = () => {
   padding: 3rem;
   border-radius: 24px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-
-  h1 {
-    font-size: 1.75rem;
-    font-weight: 600;
-    color: #1A1A1A;
-    margin-bottom: 0.75rem;
-  }
-
-  .subtitle {
-    color: #666;
-    margin-bottom: 2rem;
-  }
 }
 
-.login-form {
-  :deep(.el-input) {
-    --el-input-height: 48px;
-    margin-bottom: 1rem;
+.form-container h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin-bottom: 0.75rem;
+}
 
-    .el-input__wrapper {
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
+.form-container .subtitle {
+  color: #666;
+  margin-bottom: 2rem;
+}
 
-      &:hover {
-        box-shadow: 0 0 0 1px rgba(94, 59, 238, 0.3);
-      }
+.login-form :deep(.el-input) {
+  --el-input-height: 48px;
+  margin-bottom: 1rem;
+}
 
-      &.is-focus {
-        box-shadow: 0 0 0 2px rgba(94, 59, 238, 0.2);
-      }
-    }
-  }
+.login-form :deep(.el-input__wrapper) {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.login-form :deep(.el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px rgba(94, 59, 238, 0.3);
+}
+
+.login-form :deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 2px rgba(94, 59, 238, 0.2);
 }
 
 .form-actions {
@@ -258,13 +357,9 @@ const togglePasswordVisibility = () => {
 }
 
 .forgot-link {
-  color: #5E3BEE;
-  text-decoration: none;
+  color: var(--el-color-primary);
   font-size: 0.875rem;
-  
-  &:hover {
-    text-decoration: underline;
-  }
+  padding: 0;
 }
 
 .submit-btn {
@@ -274,11 +369,11 @@ const togglePasswordVisibility = () => {
   margin-bottom: 1.5rem;
   background: linear-gradient(135deg, #5E3BEE, #7B5AFF);
   border: none;
-  
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(94, 59, 238, 0.2);
-  }
+}
+
+.submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(94, 59, 238, 0.2);
 }
 
 .register-hint {
@@ -288,22 +383,18 @@ const togglePasswordVisibility = () => {
 }
 
 .register-link {
-  color: #5E3BEE;
+  color: var(--el-color-primary);
   text-decoration: none;
   font-weight: 500;
-  
-  &:hover {
-    text-decoration: underline;
-  }
+}
+
+.register-link:hover {
+  text-decoration: underline;
 }
 
 @keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* 响应式调整 */
@@ -321,10 +412,10 @@ const togglePasswordVisibility = () => {
   .brand-section {
     padding: 2rem 0;
     text-align: center;
+  }
 
-    .brand-content {
-      margin: auto;
-    }
+  .brand-content {
+    margin: auto;
   }
 
   .form-section {

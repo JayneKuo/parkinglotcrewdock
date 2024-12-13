@@ -1,42 +1,5 @@
 <template>
   <div class="home">
-    <!-- 导航栏 -->
-    <el-row class="nav-header" justify="space-between" align="middle">
-      <el-col :span="4" class="logo">
-        <router-link to="/">
-          <div class="logo-container">
-            <div class="logo-icon">
-              <div class="dock-door"></div>
-              <div class="truck">
-                <div class="truck-body"></div>
-                <div class="truck-cabin"></div>
-              </div>
-              <div class="flow-line"></div>
-            </div>
-            <span class="logo-text">DockFlow</span>
-          </div>
-        </router-link>
-      </el-col>
-      <el-col :span="16">
-        <div class="nav-links">
-          <router-link to="/" :class="{ active: currentRoute === '/' }">
-            Home
-          </router-link>
-          <router-link to="/warehouses" :class="{ active: currentRoute === '/warehouses' }">
-            Find Docks
-          </router-link>
-          <router-link to="/appointments" :class="{ active: currentRoute.includes('/appointment') }">
-            My Bookings
-          </router-link>
-        </div>
-      </el-col>
-      <el-col :span="4" class="nav-actions">
-        <router-link to="/auth/login">
-          <el-button class="sign-in">Sign In</el-button>
-        </router-link>
-      </el-col>
-    </el-row>
-
     <!-- 主要内容 -->
     <div class="hero-section">
       <div class="hero-background">
@@ -63,7 +26,11 @@
           <h1>Quick and Easy Dock Booking for Drivers</h1>
           <p class="subtitle">Find and book available loading docks across the US in minutes. No more waiting in lines or phone calls.</p>
           <div class="cta-buttons">
-            <el-button type="primary" size="large" @click="$router.push('/warehouses')">
+            <el-button 
+              type="primary" 
+              size="large" 
+              @click="handleFindDocks"
+            >
               Find Available Docks
               <el-icon class="el-icon-right"><ArrowRight /></el-icon>
             </el-button>
@@ -152,7 +119,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { 
   Van, 
   Calendar, 
@@ -167,6 +134,7 @@ import {
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
+const router = useRouter()
 const currentRoute = computed(() => route.path)
 const activeStep = ref<number | null>(null)
 const activeFeature = ref<number | null>(null)
@@ -280,89 +248,17 @@ const steps = [
     ]
   }
 ]
+
+// 处理查找码头按钮点击
+const handleFindDocks = () => {
+  router.push('/warehouses')
+}
 </script>
 
 <style scoped>
 .home {
   min-height: 100vh;
   background-color: #ffffff;
-}
-
-.nav-header {
-  padding: 1rem 2rem;
-  background: #ffffff;
-  border-bottom: 1px solid #eaeaea;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-}
-
-.logo {
-  a {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    color: #000000;
-    font-size: 1.5rem;
-    font-weight: 600;
-  }
-}
-
-.nav-links {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-
-  a {
-    text-decoration: none;
-    color: #000000;
-    font-weight: 500;
-    padding: 0.5rem 0;
-    font-size: 0.9rem;
-    transition: color 0.2s;
-
-    &:hover {
-      color: #5E3BEE;
-    }
-
-    &.active {
-      color: #5E3BEE;
-    }
-  }
-}
-
-.nav-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-
-  .el-button {
-    border-radius: 4px;
-    font-size: 0.9rem;
-    padding: 8px 16px;
-  }
-
-  .sign-in {
-    color: #000000;
-    border: none;
-
-    &:hover {
-      color: #5E3BEE;
-    }
-  }
-
-  .el-button--primary {
-    background: #5E3BEE;
-    border-color: #5E3BEE;
-
-    &:hover {
-      background: #4E31C8;
-      border-color: #4E31C8;
-    }
-  }
 }
 
 .hero-section {
@@ -1205,5 +1101,20 @@ const steps = [
   50%, 100% {
     transform: translateX(100%);
   }
+}
+
+.create-account-btn {
+  height: 48px;
+  padding: 0 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, #5E3BEE, #7B5AFF);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.create-account-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(94, 59, 238, 0.2);
 }
 </style> 
