@@ -55,24 +55,6 @@ const routes = [
               title: '选择装卸类型',
               requiresAuth: true
             }
-          },
-          {
-            path: 'datetime',
-            name: 'BookingDateTime',
-            component: () => import('@/views/booking/DateTimeSelection.vue'),
-            meta: {
-              title: '选择时间',
-              requiresAuth: true
-            }
-          },
-          {
-            path: 'details',
-            name: 'BookingDetails',
-            component: () => import('@/views/booking/DetailsForm.vue'),
-            meta: {
-              title: '填写详情',
-              requiresAuth: true
-            }
           }
         ]
       },
