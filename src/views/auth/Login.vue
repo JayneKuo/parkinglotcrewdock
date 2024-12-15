@@ -107,11 +107,12 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
+const route = useRoute()
 const formRef = ref<FormInstance>()
 const resetFormRef = ref<FormInstance>()
 const loading = ref(false)
@@ -175,19 +176,25 @@ const handleLogin = async () => {
       
       ElMessage.success('Login successful!')
       
-      // 获取重定向路径，如果是登录相关页面则重定向到首页
-      const redirectPath = localStorage.getItem('redirectPath') || '/'
-      const authPaths = ['/auth/login', '/auth/register', '/auth/reset-password']
+      // 获取重定向路径
+      let redirectPath = route.query.redirect as string
       
-      // 如果重定向路径是认证相关页面，则重定向到首页
-      if (authPaths.some(path => redirectPath.includes(path))) {
-        router.push('/')
-      } else {
-        router.push(redirectPath)
+      if (!redirectPath) {
+        // 如果URL中没有redirect参数，则使用localStorage中的路径
+        redirectPath = localStorage.getItem('redirectPath') || '/'
       }
       
       // 清除重定向路径
       localStorage.removeItem('redirectPath')
+      
+      // 如果重定向路径是认证相关页面，则重定向到首页
+      const authPaths = ['/auth/login', '/auth/register', '/auth/reset-password']
+      if (authPaths.some(path => redirectPath.includes(path))) {
+        router.push('/')
+      } else {
+        console.log('Redirecting to:', redirectPath) // 调试日志
+        router.push(redirectPath)
+      }
     } else {
       ElMessage.error('Invalid email or password')
     }

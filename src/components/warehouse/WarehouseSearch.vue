@@ -6,7 +6,7 @@
           <el-form-item>
             <el-input
               v-model="searchForm.keyword"
-              placeholder="搜索仓库名称、地址或邮编"
+              placeholder="Search by name, address or zip code"
               prefix-icon="Search"
               clearable
               @input="handleSearch"
@@ -17,7 +17,7 @@
           <el-form-item>
             <el-select
               v-model="searchForm.state"
-              placeholder="选择州"
+              placeholder="Select State"
               clearable
               @change="handleStateChange"
             >
@@ -34,7 +34,7 @@
           <el-form-item>
             <el-select
               v-model="searchForm.city"
-              placeholder="选择城市"
+              placeholder="Select City"
               clearable
               :disabled="!searchForm.state"
             >

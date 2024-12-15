@@ -1,10 +1,26 @@
 import type { Warehouse, USLocation } from '@/types/warehouse';
 
-// 模拟仓库数据
+// Warehouse data
 export const mockWarehouses: Warehouse[] = [
   {
+    id: 'dock-001',
+    name: 'Oakland Port Terminal A',
+    address: '1 Market Street',
+    city: 'Oakland',
+    state: 'CA',
+    zipCode: '94607',
+    latitude: 37.7949,
+    longitude: -122.2968,
+    distance: 0.8,
+    availableDocks: 5,
+    totalDocks: 8,
+    imageUrl: 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+    pricingType: 'hourly',
+    priceRate: 45
+  },
+  {
     id: '1',
-    name: '硅谷智能仓储中心',
+    name: 'Silicon Valley Storage Hub',
     address: '789 Technology Drive',
     city: 'San Jose',
     state: 'CA',
@@ -20,7 +36,7 @@ export const mockWarehouses: Warehouse[] = [
   },
   {
     id: '2',
-    name: '旧金山湾区物流园',
+    name: 'SF Bay Area Logistics Center',
     address: '456 Harbor Street',
     city: 'San Francisco',
     state: 'CA',
@@ -36,7 +52,7 @@ export const mockWarehouses: Warehouse[] = [
   },
   {
     id: '3',
-    name: '洛杉矶港口仓储',
+    name: 'LA Port Storage Facility',
     address: '321 Port Avenue',
     city: 'Los Angeles',
     state: 'CA',
@@ -52,7 +68,7 @@ export const mockWarehouses: Warehouse[] = [
   }
 ];
 
-// 美国州和城市数据
+// US locations data
 export const usLocations: USLocation[] = [
   {
     state: 'California',

@@ -5,14 +5,14 @@ export interface Warehouse {
   city: string;
   state: string;
   zipCode: string;
-  imageUrl: string;
-  availableDocks: number;
-  totalDocks: number;
-  distance: number;
-  pricingType: 'hourly' | 'daily' | 'monthly';
-  priceRate: number;
   latitude: number;
   longitude: number;
+  distance: number;
+  availableDocks: number;
+  totalDocks: number;
+  imageUrl: string;
+  pricingType: 'hourly' | 'daily' | 'monthly';
+  priceRate: number;
 }
 
 export interface USLocation {

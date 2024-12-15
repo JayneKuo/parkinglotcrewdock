@@ -1,7 +1,7 @@
 <template>
   <div class="warehouses-page">
     <div class="page-container">
-      <h1>可用车位</h1>
+      <h1>Available Docks</h1>
       <warehouse-search @search="handleSearch" />
       
       <div class="warehouses-grid">
@@ -20,10 +20,26 @@ import { ref, computed } from 'vue';
 import WarehouseSearch from '@/components/warehouse/WarehouseSearch.vue';
 import WarehouseCard from '@/components/warehouse/WarehouseCard.vue';
 import { mockWarehouses } from '@/data/mockData';
-import type { Warehouse } from '@/types/warehouse';
+
+interface SearchParams {
+  keyword: string;
+  state: string;
+  city: string;
+}
+
+interface Warehouse {
+  id: string;
+  name: string;
+  address: string;
+  state: string;
+  city: string;
+  zipCode: string;
+  distance: number;
+  availableDocks: number;
+}
 
 const warehouses = ref<Warehouse[]>(mockWarehouses);
-const searchParams = ref({
+const searchParams = ref<SearchParams>({
   keyword: '',
   state: '',
   city: ''
