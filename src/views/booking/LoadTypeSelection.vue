@@ -88,9 +88,9 @@ const goBack = () => {
 const nextStep = () => {
   if (selectedType.value) {
     // 保存选择到 store
-    bookingStore.setLoadDirection(selectedType.value as any)
+    bookingStore.setBasicInfo(dockInfo.value.name, selectedType.value)
     // 跳转到下一步
-    router.push('/booking/datetime')
+    router.push(`/booking/${route.params.id}`)
   }
 }
 
