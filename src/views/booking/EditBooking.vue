@@ -25,7 +25,7 @@
                 v-model="form.orderNumber" 
                 disabled
                 class="readonly-field"
-              />
+              ></el-input>
             </div>
             <div class="form-item">
               <div class="form-label">Status</div>
@@ -39,7 +39,7 @@
                 v-model="form.createdTime" 
                 disabled
                 class="readonly-field"
-              />
+              ></el-input>
             </div>
           </div>
         </div>
@@ -57,7 +57,7 @@
                 v-model="form.warehouse"
                 disabled
                 class="readonly-field"
-              />
+              ></el-input>
             </div>
             <div class="form-item">
               <div class="form-label">Load Type</div>
@@ -65,7 +65,7 @@
                 v-model="form.loadType"
                 disabled
                 class="readonly-field"
-              />
+              ></el-input>
             </div>
           </div>
         </div>
@@ -274,17 +274,7 @@ import {
   Timer,
   Location,
   Box,
-  Position,
   Document,
-  Loading,
-  QuestionFilled,
-  CreditCard,
-  Clock,
-  Calendar,
-  Van,
-  Check,
-  Wallet,
-  Edit,
   User
 } from '@element-plus/icons-vue'
 
@@ -355,10 +345,6 @@ const form = ref<BookingForm>({
 
 // Form validation rules
 const rules = {
-  // Basic Info
-  warehouse: [{ required: true, message: 'Please select warehouse', trigger: 'change' }],
-  loadType: [{ required: true, message: 'Please select load type', trigger: 'change' }],
-  
   // Time Slot
   date: [{ required: true, message: 'Please select date', trigger: 'change' }],
   time: [{ required: true, message: 'Please select time', trigger: 'change' }],
@@ -431,7 +417,7 @@ onMounted(() => {
       loadType: query.loadType as string || '',
       
       // Time Slot
-      date: query.date as string || '',
+      date: query.date as string || dayjs().format('YYYY-MM-DD'),
       time: query.time as string || '',
       duration: query.duration as string || '',
       
@@ -675,5 +661,17 @@ const handleCancel = async () => {
   border-radius: 6px;
   display: inline-flex;
   align-items: center;
+}
+
+:deep(.el-input__wrapper) {
+  box-shadow: 0 0 0 1px var(--el-border-color) inset;
+  
+  &:hover {
+    box-shadow: 0 0 0 1px var(--el-color-primary) inset;
+  }
+  
+  &.is-focus {
+    box-shadow: 0 0 0 1px var(--el-color-primary) inset;
+  }
 }
 </style> 
