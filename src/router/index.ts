@@ -14,6 +14,15 @@ const routes = [
         component: () => import('@/views/home/Index.vue')
       },
       {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('@/views/profile/Index.vue'),
+        meta: {
+          requiresAuth: true,
+          title: '个人资料'
+        }
+      },
+      {
         path: 'warehouses',
         name: 'Warehouses',
         component: () => import('@/views/warehouses/Index.vue')
